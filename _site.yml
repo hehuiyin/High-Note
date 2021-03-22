@@ -1,6 +1,6 @@
 name: "High Note Premium"
 navbar:
-  title: "High Note premium"
+  title: "High Note Premium"
   left:
     - text: "About"
       href: about.html
@@ -10,3 +10,4 @@ Output:
   html_document:
     theme: cosmo
     highlight: textmate
+output_dir: "docs"
