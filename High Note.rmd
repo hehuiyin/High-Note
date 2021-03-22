@@ -1,0 +1,515 @@
+# *High Note* premium subsciber analysis 
+
+## **Part 1. Summary statistics **
+```{R}
+library(dplyr)
+library(ggplot2)
+library(psych)
+library(wesanderson)
+library(gridExtra)
+library(MatchIt)
+
+data=read.csv('HighNote Data Midterm.csv')
+# Q1. Statistics ####
+  #statistics
+stat_summary=describeBy(data, data$adopter)
+stat_summary
+
+data_col=colnames(data)[2:ncol(data)]
+stat=data%>%
+  group_by(adopter) %>%
+  select(one_of(data_col)) %>%
+  summarise_all(funs(mean(.,na.rm = T),
+                     sd(.,na.rm=T),
+                     max(.,na.rm = T),
+                     min(.,na.rm = T)))
+stat
+
+#t-test
+var=c("age","male","friend_cnt","avg_friend_age","avg_friend_male",
+      "friend_country_cnt","subscriber_friend_cnt","songsListened",
+      "lovedTracks","posts", "playlists","shouts",
+      "tenure","good_country")
+lapply(data[,var],function(v){t.test(v~data$adopter)})
+```
+
+Group 1 is the adopters and group 0 is the non-adopters. From the above statistic table, we can see that compared with non-adopters, adopters are generally are older males with more friends and they are more likely from countries other than US, UK, and Germany. And adopters’ friends are also older and diversely from different countries. They also have more friends who are subscribers. They also are more active on the platform, listening to more songs, showing more loved tracks, posting more Q&A forum, receiving more shouts and staying on the site longer.
+
+Thus, we can conclude that premium users are more likely to be older people with more friends on the platform and they also spend more time on the platform and are more active in terms of the interaction with the features on the platform including songs listened, loved tracks, posts, shouts. Compared with the free users, premium users show a better overall performance on the site.
+
+And then I did a t-test on each variables for the two groups (adopters vs. non-adopters) and found out that the p-values for all the tests are significant, meaning that the means of all variables are different between two groups so these means are statistically distinguishable.
+
+
+## **Part 2. Data Visualization**
+### Demographics
+```{R}
+# Q2. Visuals####
+  #to draw graphs
+data_g=data
+data_g$adopter=as.character(data_g$adopter)
+stat$adopter=as.character(stat$adopter)
+  
+#(i). Demographics ####
+#age
+ggplot(data_g,aes(x=age,group=adopter,fill=adopter))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=1)+
+  labs(title="Age")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  geom_vline(data = stat, aes(xintercept = age_mean, colour = adopter),
+             linetype = "longdash", size=1)+
+  theme_bw()
+```
+
+The vertical lines represent the mean age and we can see that adopters are generally older than non-adopters and in both groups, most users are age around 22.
+
+```{R}
+#male
+p1=ggplot(data_g, aes(x=adopter, y = male, fill = adopter))+ 
+  geom_bar(stat = 'summary',fun=mean)+
+  xlab("adopter")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  labs(title="male")
+
+#good_country
+p2=ggplot(data_g, aes(x=adopter, y = good_country, fill = adopter))+ 
+  geom_bar(stat = 'summary',fun=mean)+
+  xlab("adopter")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  labs(title="good_country")
+
+#Combined: male+good_country
+grid.arrange(p1, p2,nrow = 2)
+```
+
+Adopters are more likely to be males as the average of male is more for group 1 than for group 0. Variable ‘good_country’ =1 represents people are from US, UK and Germany. And thus, the less average number of good_country means that adopters are more likely from countries other than US, UK and Germany.
+
+And thus, in terms of demographics, we can conclude that adopters are more likely to be older males who are not from US, UK or Germany. Because older people might have a higher income, it makes them more affordable to become premium users.
+
+### Peer influence
+```{R}
+  #(ii). Peer influence ####
+#friend_cnt
+ggplot(data_g, aes(x=age, y=friend_cnt, col=adopter))+
+  labs(title="friend_cnt")+
+  scale_color_manual(values=wes_palette(name="Chevalier1"))+
+  geom_point(alpha=0.5)+
+  geom_hline(data = stat, aes(yintercept = friend_cnt_mean, colour = adopter),
+             linetype = "longdash", size=1)
+```
+
+The horizontal lines represent the mean values of friend_cnt for two groups and we can see the yellow line (adopter) is above the grey line (non-adopter), meaning that on average, the group 1 (adopter) has more friends than group 0 (non-adopter). However, it’s interesting to see that there’s also non-adopter who has close to 5,000 friends. And also there are more non-adopters have friend number more than 1,000, compared with adopters. Even though there are some non- adopters have lots of friends, there are still a lots of them do not have significant amount of friends. Thus, the adopters still have more friends than non-adopters on average.
+
+```{R}
+#avg_friend_age
+ggplot(data_g,aes(x=avg_friend_age,group=adopter,fill=adopter))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=1)+
+  labs(title="avg_friend_age")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  geom_vline(data = stat, aes(xintercept = avg_friend_age_mean, colour = adopter),
+             linetype = "longdash", size=1)+
+  theme_bw()
+```
+
+
+The vertical lines show the mean values of avg_friend_age for two groups. We can see that adopters have older friends than non-adopters. And most of their friends’ age are all around 22.
+
+```{R}
+#avg_friend_male
+p3=ggplot(data_g, aes(x=adopter, y = avg_friend_male, fill = adopter))+ 
+  geom_bar(stat = 'summary', fun=mean)+
+  xlab("adopter")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  labs(title="avg_friend_male")
+
+#friend_country_cnt
+p4=ggplot(data_g, aes(x=adopter, y = friend_country_cnt, fill = adopter))+ 
+  geom_bar(stat = 'summary', fun=mean)+
+  xlab("adopter")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  labs(title="friend_country_cnt")
+
+#Combined: avg_friend_male+friend_country_cnt
+grid.arrange(p3,p4,nrow=2)
+```
+
+The graph shows that compared with non-adopters, adopters’ friends are more likely to be males and their friends are more diverse, meaning that they are from different countries. Friends’ of non-adopters are from less number of countries.
+
+```{R}
+#subscriber_friend_cnt
+ggplot(data_g, aes(x=age, y=subscriber_friend_cnt, col=adopter))+
+  labs(title="Subscriber friends")+
+  scale_color_manual(values=wes_palette(name="Chevalier1"))+
+  geom_point(alpha=0.3)+
+  geom_hline(data = stat, aes(yintercept = subscriber_friend_cnt_mean, 
+                              colour = adopter),
+             linetype = "longdash", size=1)
+```
+
+The horizontal lines shows the mean values of number of subscriber friends in two groups and we can see that yellow line is above the grey line, meaning that adopters have more subscriber friends than non-adopters on average. However, it’s also interesting to see that there is also non- adopter who has more than 300 subscriber friends and also compared with adopters, there are more non-adopters who have more than 50 subscriber friends. However, since there are still lots of non-adopters who have less subscriber friends, adopters have more subscriber friends on average.
+
+Therefore, in terms of peer influence, adopters generally have more friends and subscriber friends and their friends more tend to be older males and are more diversely from different countries. Interestingly, we also find out the some non-adopters have many friends and subscriber friends but since they are only a few people, most non-adopters do not have lots of friends and subscriber friends. And thus, we can say that adopters have more peer influence than non-adopters. The stronger peer influence is how it make them convert from free users to premium users.
+
+### User engagement
+```{R}
+  #(iii). User engagement####
+#songsListened
+p5=ggplot(data_g, aes(x=adopter, y = songsListened, fill = adopter))+ 
+  geom_bar(stat = 'summary', fun=mean)+
+  xlab("adopter")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  labs(title="songsListened")
+
+#lovedTracks
+p6=ggplot(data_g, aes(x=adopter, y = lovedTracks, fill = adopter))+ 
+  geom_bar(stat = 'summary',fun=mean)+
+  xlab("adopter")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  labs(title="lovedTracks")
+
+#posts
+p7=ggplot(data_g, aes(x=adopter, y = posts, fill = adopter))+ 
+  geom_bar(stat = 'summary',fun=mean)+
+  xlab("adopter")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  labs(title="posts")
+
+#playlists
+p8=ggplot(data_g, aes(x=adopter, y = playlists, fill = adopter))+ 
+  geom_bar(stat = 'summary',fun=mean)+
+  xlab("adopter")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  labs(title="playlists")
+
+#shouts
+p9=ggplot(data_g, aes(x=adopter, y = shouts, fill = adopter))+ 
+  geom_bar(stat = 'summary',fun=mean)+
+  xlab("adopter")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  labs(title="shouts")
+
+#tenure
+p10=ggplot(data_g, aes(x=adopter, y = tenure, fill = adopter))+ 
+  geom_bar(stat = 'summary',fun=mean)+
+  xlab("adopter")+
+  scale_fill_manual(values=wes_palette(name="Chevalier1"))+
+  labs(title="tenure")
+
+#Combined:
+grid.arrange(p5,p6,p7,p8,p9,p10,nrow=2)
+```
+
+The graphs show that for all the features, adopters have higher mean values which shows a better performance on the platform.
+
+```{R}
+ggplot(data_g, aes(x=age, y=tenure, col=adopter))+
+  labs(title="tenure")+
+  scale_color_manual(values=wes_palette(name="Chevalier1"))+
+  geom_point(alpha=0.5)+
+  geom_hline(data = stat, aes(yintercept = tenure_mean, colour = adopter),
+             linetype = "longdash", size=1)
+```
+
+We can look into tenure further from the graph below. The horizontal lines show the mean value of tenure for two groups and it shows that the yellow line is above the grey line which means that adopters stays on the site a lot longer than the non-adopters in general. However, we can also see that on the top of the graph, it shows that there are more non-adopters who stay with the site more than 115 months so some of the non-adopters are really loyal users. However, because most of the non-adopters are clustered on the bottom of the graph, adopters still have higher tenure than non-adopters on average.
+
+To summarize, in terms of user engagement, adopters are more active and stay longer on the site, showing a better performance and engagement on interacting with the features including songsListened, lovedTracks, posts, playlists, shouts. Even though there are a few non-adopters who also stay with the platform for a long time, adopters still show a better performance as a whole. Because those people are more engaged with the platform, they are more likely to convert from free users to premium users.
+
+
+## **Part 3. Propensity Score Matching**
+
+In order to see the effect of subscriber friends on being an adopter, we first need to divide the treatment and control based on the number of subscriber friends:
+Treatment group: subscriber_friend_cnt >=1
+Control group: subscriber_friend_cnt =0
+
+```{R}
+# Q3.PSM####
+  #control & treatment group
+data$treatment=ifelse(data$subscriber_friend_cnt>=1,1,0)
+```
+
+### Step 1.Pre-analysis using non-matched data
+#### 1.1 Difference in means: outcome variable
+And then, I did a t-test on the outcome variable (adopter) to see if the means of the two group are statistically different. The p-value of the t-test shows it as significant and thus, the means are different between two groups and that’s why matching is needed to balance the data.
+```{R}
+#step 1. Pre-analysis using non-matched data ####
+  ##1.1 Difference-in-means:outcome variables ####
+t.test(data$adopter~data$treatment)
+#means are different and that's why matching is needed to balance the data
+```
+
+#### 1.2 Difference in means: covariates
+Next, I did t-test on all the variables to see if there’s statistically significant different in their means between treatment and control groups.
+```{R}
+  ##1.2 Difference-in-means: covariates ####
+#the independent variables
+var=c("age","male","friend_cnt","avg_friend_age","avg_friend_male",
+      "friend_country_cnt","songsListened",
+      "lovedTracks","posts", "playlists","shouts",
+      "tenure","good_country")
+
+#the difference in means
+data%>%
+  group_by(treatment) %>%
+  select(one_of(var)) %>%
+  summarise_all(funs(mean(.,na.rm = T))) #different means
+
+#t-test to the significance
+lapply(data[,var],function(v1){t.test(v1~data$treatment)})
+
+#t-test table
+test1 = NULL
+for (i in 1:13){
+  variable = var[i]
+  p_value = t.test(data[, var[i]] ~ data$treatment)$p.value
+  test1 <- rbind(test1, data.frame(variable, p_value))
+}
+test1 #result shows male is not significantly different in two group 
+```
+
+From the t-test results, we can see that except for variable ‘male’, the other variables are all significantly different in mean for two groups. However, since male is relevant to our treatment assignments and outcomes, I still include it in the following matching. And we want to make sure the means for treatment and control group are statistically indifferent so that we can find out the treatment effect on outcome. The t-test results show our data is not balance right now, so we will use propensity score matching to balance the data.
+
+### Step 2. Propensity score estimation
+We will run a logistic regression on to estimate the propensity score. The outcome variable is ‘treatment’. And for the independent variables, first we look at the distribution of each variable which is shown below.
+
+```{R}
+#step 2. Propensity score estimation ####
+#look at the distribution of the continuous variables 
+g1=ggplot(data_g,aes(x=age))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=1)+
+  labs(title="Age")
+g2=ggplot(data_g,aes(x=friend_cnt))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=1)+
+  labs(title="friend_cnt")
+g3=ggplot(data_g,aes(x=avg_friend_age))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=1)+
+  labs(title="avg_friend_age")
+g4=ggplot(data_g,aes(x=friend_country_cnt))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=1)+
+  labs(title="friend_country_cnt")
+g5=ggplot(data_g,aes(x=songsListened))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=1000)+
+  labs(title="songsListened")
+g6=ggplot(data_g,aes(x=lovedTracks))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=100)+
+  labs(title="lovedTracks")
+g7=ggplot(data_g,aes(x=posts))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=100)+
+  labs(title="posts")
+g8=ggplot(data_g,aes(x=playlists))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=1)+
+  labs(title="playlists")
+g9=ggplot(data_g,aes(x=shouts))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=100)+
+  labs(title="shouts")
+g10=ggplot(data_g,aes(x=tenure))+
+  geom_histogram(position="stack",colour='grey',alpha=3,binwidth=10)+
+  labs(title="tenure")
+grid.arrange(g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,nrow=5)
+#friend_cnt, firend_country_cnt, songsListened, lovedTracks, 
+#posts, playlists, shouts are right skewed so log them
+```
+
+I found out that the following variables are highly right-skewed: friend_cnt, firend_country_cnt, songsListened, lovedTracks, posts, playlists, shouts. And thus, we will take log transformation on these variables in order to make the outliers are not having too much effect on our results. And the logistic regression result is shown as following and we can see that all variables are significant.
+
+```{R}
+#logistic regression
+ps=glm(treatment~age +male+log(1+friend_cnt)+avg_friend_age+
+         avg_friend_male+log(1+friend_country_cnt)+
+         log(1+songsListened) + log(1+lovedTracks)+
+         log(1+posts)+log(1+playlists) + log(1+shouts)+
+         tenure + good_country,
+       data=data,family = binomial())
+summary(ps)
+```
+
+Using the above regression model, we can now calculate the propensity score for each id and then create a table that shows the propensity score and the treatment status. The first few lines are shown below as examples:
+
+```{R}
+#calculate propensity scores
+ps_df=data.frame(pr_score = predict(ps, type = "response"),
+           treatment = ps$model$treatment)
+head(ps_df)
+```
+
+I also created a histogram plot to show the distribution of propensity score by treatment status. We can see from the graphs below that the control group graph is right skewed with more propensity scores that are closer to 0 while the treatment group is more smooth with consistent distribution among all levels of scores.
+
+```{R}
+#plot the scores
+ps_df %>%
+  mutate(treatment = ifelse(treatment == 1, 'treatment', 'control')) %>%
+  ggplot(aes(x = pr_score)) +
+  geom_histogram(color = "white",bins=20) +
+  facet_wrap(~treatment) +
+  xlab("Probability of treatment") +
+  theme_bw()
+```
+
+### Step 3. Propensity Score Matching
+And then, I can execute the matching using nearest method. The nearest method pair a treatment observation to the one in control group with the closest propensity score. And I also set the parameter ‘caliper’ = 0.01 which means that match will only happen if treatment and control group are within 0.01 standard deviation of propensity score away from each other. Adding this parameter will further help us balance the data.
+
+The result is shown below and we can see that the algorithm found 6,948 pairs of matched treatment and control observations. Before the matching, the propensity scores for treatment and control group is 0.4938 and 0.1462, respectively. After the matching, the scores become 0.3635 and 0.3629 with a difference of 0.0006 which is a lot lower than the previous difference of 0.3476, proving that the data balance has been improved by 99.8%.
+```{R}
+#step 3. propensity score matching####
+#check na
+anyNA(data) #FALSE
+
+#matching
+match <- matchit(treatment ~ age +male+log(1+friend_cnt)+avg_friend_age+
+                   avg_friend_male+log(1+friend_country_cnt)+
+                   log(1+songsListened) +log(1+lovedTracks) + 
+                   log(1+posts)+log(1+playlists) + log(1+shouts)+
+                   log(1+tenure) + good_country,
+                 data = data, method = 'nearest',caliper=0.01)
+summary(match)
+
+#create datafame only with matched data
+data_m <- match.data(match)
+dim(data_m)
+```
+
+### Step 4. Assess covariate balance in the matched sample
+To assess the balance in the matched dataset, I first plot the means of each covariate based on propensity score for treatment and control group. If the means are really close to each other, that means that the matching is done well. And the graphs below shows nearly identical means for each covariate between two groups so our matching is good.
+
+```{R}
+#step 4. assess covariate balance####
+#4.1. plots ####
+plot_fun <- function(data, variable) {
+  data$variable <- data[, variable]
+  data$treatment <- as.factor(data$treatment)
+  support <- c(min(data$variable), max(data$variable))
+  ggplot(data, aes(x = distance, y = variable, color = treatment)) +
+    geom_point(alpha = 0.2, size = 1.3) +
+    geom_smooth(method = "loess", se = F) +
+    xlab("Propensity score") +
+    ylab(variable) +
+    theme_bw() +
+    ylim(support)
+}
+grid.arrange(
+  plot_fun(data_m,'age'),
+  plot_fun(data_m,'male'),
+  plot_fun(data_m,'friend_cnt'),
+  plot_fun(data_m,'avg_friend_age'),
+  plot_fun(data_m,'avg_friend_male'),
+  plot_fun(data_m,'friend_country_cnt'),
+  nrow = 3, widths = c(1, 0.8)
+)
+grid.arrange(
+  plot_fun(data_m,'songsListened'),
+  plot_fun(data_m,'lovedTracks'),
+  plot_fun(data_m,'posts'),
+  plot_fun(data_m,'playlists'),
+  plot_fun(data_m,'shouts'),
+  plot_fun(data_m,'tenure'),
+  plot_fun(data_m,'good_country'),
+  nrow = 4, widths = c(1, 0.8)
+)
+```
+
+In order to make sure our means are really statistically indifferent in two groups, I did t-test on all the covariates to see if there is significant mean differences. And the result below shows that all of the p-values are insignificant which means that all the means of covariates are the same between treatment and control group, proving that our matching is done successfully and our matched data is now balanced.
+
+```{R}
+#4.2. t-test####
+#t-test
+lapply(data_m[,var],function(v2){t.test(v2~data_m$treatment)})
+
+#t-test table
+test2 = NULL
+for (i in 1:13){
+  variable = var[i]
+  p_value = t.test(data_m[, var[i]] ~ data_m$treatment)$p.value
+  test2 <- rbind(test2, data.frame(variable, p_value))
+}
+test2 #results show the mean differences are insignificant
+```
+
+### Step 5. Estimating treatment effect
+After matching was done well, I used the matched dataset to run a logistic regression model to see the effect of treatment on adopter. The regression result below shows that treatment (subscriber friend>=1) has a positive effect on adopter (premium users), meaning that having more than one subscriber friends have a positive effect on converting users from free users to premium users.
+
+
+```{R}
+#step 5. Estimating treatment effect####
+#regression to see the effect
+log_reg=glm(adopter~treatment,data=data_m,binomial())
+summary(log_reg)
+```
+
+
+## **Part 4. Regression Analysis**
+I ran a logistic regression model on all the variables to see the effect of them on our outcome variable (adopter). The result below shows that variables ‘friend_cnt’,’avg_friend_male’ and ‘friend_country_cnt’ are not significant so I excluded these insignificant variables and built another model with only the significant variables.
+
+```{R}
+#Q4. Logistic Regression ####
+log_reg1=glm(adopter~age +male+log(1+friend_cnt)+avg_friend_age+
+              avg_friend_male+log(1+friend_country_cnt)+
+               log(1+subscriber_friend_cnt)+
+              log(1+songsListened) +log(1+lovedTracks) + 
+              log(1+posts)+log(1+playlists) + log(1+shouts)+
+              log(1+tenure) + good_country,
+            data=data_m,family = binomial())
+summary(log_reg1)
+```
+
+Below shows the reduced model with only the significant variables and I also took exponential of the coefficients to better interpret the results.
+
+```{R}
+#reduced model with only the significant variables
+log_reg2=glm(adopter~age +male+avg_friend_age+
+               log(1 + subscriber_friend_cnt)+
+               log(1+songsListened) +log(1+lovedTracks) + 
+               log(1+posts)+log(1+playlists) + log(1+shouts)+
+               log(1+tenure) + good_country,
+            data=data_m,family = binomial())
+summary(log_reg2)
+```
+
+The exponential of coefficients are the odd ratio of each variable. However, because some of the variables are in log scale, for the logged variables, I translated them to odd ratio by exp(𝛽/100). Below is the odd ratio of all the key variables:
+
+```{R}
+#exponential coeff
+coeff_exp=exp(log_reg2$coefficients)
+coeff=log_reg2$coefficients
+
+#odd ratio table
+odd_r=NULL
+for (i in 2:12){
+  if (i%in% c(5:11)){
+    odd_ratio=exp(coeff[i]/100)
+    odd_r=rbind(odd_r,data.frame(odd_ratio))
+  }
+  else{
+    odd_ratio=coeff_exp[i]
+    odd_r=rbind(odd_r,data.frame(odd_ratio))
+  }
+}
+
+#change the format of the table
+odd_r <- cbind(variable = rownames(odd_r), odd_r)
+rownames(odd_r) <- 1:nrow(odd_r)
+odd_r$variable=c('age',"male","avg_friend_age","subscriber_friend_cnt", "songsListened",
+                 "lovedTracks","posts","playlists","shouts","tenure","good_country")
+odd_r
+```
+
+To interpret the model, we can conclude that:
+For 1 unit increase in age, the odds of adopter increases by 1.92%.
+For 1 unit increase in male, the odds of adopter increases by 31.99%.
+For 1 unit increase in average friend age, the odds of adopter increases by 2.48%.
+For 1% increase in subscriber friend count, the odds of adopter increases by 0.81%.
+For 1% increase in songs listened, the odds of adopter increases by 0.25%.
+For 1% increase in loved tracks, the odds of adopter increases by 0.25%.
+For 1% increase in posts, the odds of adopter increases by 0.13%.
+For 1% increase in playlists, the odds of adopter increases by 0.22%.
+For 1% increase in shouts, the odds of adopter decreases by 0.13%.
+For 1% increase in tenure, the odds of adopter decreases by 0.32%.
+For 1 unit increase in good country, the odds of adopter decreases by (1-0.61=0.39) 39%.
+
+In conclusion, age, male, friends’ age, subscriber friend amount, the number of songs listened, loved tracks, posts and playlists have a positive effect on converting users from free to premium which means that the higher these variables become, the higher the chance that free users will convert to a premium users. However, the number of shouts, the time spent on the site and whether users are from US, UK and Germany have a negative effect on becoming a premium users, meaning that the higher these variables are, the lower the probability of becoming premium users.
+
+## **Part 5. Takeaways**
+In the aspect of demographic, since age and male both are positively correlated to adopters, the company could target users who are older males because they have higher possibility to convert into premium status. The company can create promotion bundle of the membership and send out these promotion advertisement to older males to initiate their premium status.
+
+In terms of peer influence, subscribers friends who are older have a positive effect on adopters and thus, if the company can increase users’ interaction with more current subscribers, they can potentially generate more premium users. The company can host offline or online events to encourage users to interact with each other and make new friends. By making more friends, users might have better experience and feel more loyal to the platform and thus, are willing to convert eventually.
+
+For user engagement, since songs listened, loved tracks, playlists and posts are positively related to adopters, if the company can enhance features on these areas to encourage users to continue using these functions and enhance their engagement, users will be more likely to go into premium status.
+
+And since shouts, tenure and good country are negatively affecting adopters, the company needs some improvement on these aspects. They could improve or change the function of shouts. And since it seems like that the longer users stay with the platform doesn’t help users to convert into premium status, users might feel reluctant about the current features so they are not willing to convert. If the site develop some new functions for premium users only on the platform, that might help to bring some attention to users. And also, good country variable represents people from US, UK and Germany. The negative correlation between good country and adopter indicates that more users are from countries other than US, UK and Germany. So, the company might want to develop their international market to draw more users internationally.
