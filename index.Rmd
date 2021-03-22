@@ -1,8 +1,14 @@
 ---
-title: "Analysis"
-output: html_document
+title: "*High Note* premium subsciber Analysis"
+author: 'Huiyin(Cloris) He'
+Date: '03/2021'
+output: 
+  html_document:
+    toc: True
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
 ---
-# *High Note* premium subsciber analysis 
 
 ## **Part 1. Summary statistics **
 ```{R}
