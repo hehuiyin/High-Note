@@ -1,5 +1,6 @@
 ---
 title: "Analysis"
+output: html_document
 ---
 # *High Note* premium subsciber analysis 
 
