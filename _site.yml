@@ -1,0 +1,12 @@
+name: "High Note Premium"
+navbar:
+  title: "High Note premium"
+  left:
+    - text: "About"
+      href: about.html
+    - text: "Analysis"
+      href: index.html
+Output:
+  html_document:
+    theme: cosmo
+    highlight: textmate

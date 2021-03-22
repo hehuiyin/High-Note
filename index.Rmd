@@ -1,3 +1,6 @@
+---
+title: "Analysis"
+---
 # *High Note* premium subsciber analysis 
 
 ## **Part 1. Summary statistics **
@@ -9,7 +12,7 @@ library(wesanderson)
 library(gridExtra)
 library(MatchIt)
 
-data=read.csv('HighNote Data Midterm.csv')
+data=read.csv('~/Documents/UCI/3. WINTER/BANA 277. CUST & SOCIAL ANLYT/MIDTERM/HighNote Data Midterm.csv')
 # Q1. Statistics ####
   #statistics
 stat_summary=describeBy(data, data$adopter)
