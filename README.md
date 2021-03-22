@@ -4,4 +4,4 @@
 
   Peer influence and user engagement can affect users’ decisions to pay for a premium subscription. Using the High Note data, we can predict the decision to buy using both types of variables. The results will quantify the effect of social engagement on revenue, as well as how valuable a premium subscriber can be in a freemium social community.
 
-file:///Users/hehuiyin/Desktop/High-Note/_site/index.html
+
