@@ -351,35 +351,13 @@ div.tocify {
 
 <div id="part-1.-summary-statistics" class="section level2">
 <h2><strong>Part 1. Summary statistics </strong></h2>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.6.2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(ggplot2)</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.6.2</code></pre>
-<pre class="r"><code>library(psych)</code></pre>
-<pre><code>## Warning: package &#39;psych&#39; was built under R version 3.6.2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;psych&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:ggplot2&#39;:
-## 
-##     %+%, alpha</code></pre>
-<pre class="r"><code>library(wesanderson)
-library(gridExtra)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;gridExtra&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     combine</code></pre>
-<pre class="r"><code>library(MatchIt)</code></pre>
-<pre><code>## Warning: package &#39;MatchIt&#39; was built under R version 3.6.2</code></pre>
-<pre class="r"><code>data=read.csv(&#39;~/Documents/UCI/3. WINTER/BANA 277. CUST &amp; SOCIAL ANLYT/MIDTERM/HighNote Data Midterm.csv&#39;)
+<pre class="r"><code>library(dplyr)
+library(ggplot2)
+library(psych)
+library(wesanderson)
+library(gridExtra)
+library(MatchIt)
+
 # Q1. Statistics ####
   #statistics
 stat_summary=describeBy(data, data$adopter)
@@ -464,19 +442,8 @@ stat=data%&gt;%
   summarise_all(funs(mean(.,na.rm = T),
                      sd(.,na.rm=T),
                      max(.,na.rm = T),
-                     min(.,na.rm = T)))</code></pre>
-<pre><code>## Warning: `funs()` was deprecated in dplyr 0.8.0.
-## Please use a list of either functions or lambdas: 
-## 
-##   # Simple named list: 
-##   list(mean = mean, median = median)
-## 
-##   # Auto named with `tibble::lst()`: 
-##   tibble::lst(mean, median)
-## 
-##   # Using lambdas
-##   list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))</code></pre>
-<pre class="r"><code>stat</code></pre>
+                     min(.,na.rm = T)))
+stat</code></pre>
 <pre><code>## # A tibble: 2 x 57
 ##   adopter age_mean male_mean friend_cnt_mean avg_friend_age_m… avg_friend_male_…
 ##     &lt;int&gt;    &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt;             &lt;dbl&gt;             &lt;dbl&gt;
@@ -724,7 +691,7 @@ ggplot(data_g,aes(x=age,group=adopter,fill=adopter))+
   geom_vline(data = stat, aes(xintercept = age_mean, colour = adopter),
              linetype = &quot;longdash&quot;, size=1)+
   theme_bw()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>The vertical lines represent the mean age and we can see that adopters are generally older than non-adopters and in both groups, most users are age around 22.</p>
 <pre class="r"><code>#male
 p1=ggplot(data_g, aes(x=adopter, y = male, fill = adopter))+ 
@@ -742,7 +709,7 @@ p2=ggplot(data_g, aes(x=adopter, y = good_country, fill = adopter))+
 
 #Combined: male+good_country
 grid.arrange(p1, p2,nrow = 2)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>Adopters are more likely to be males as the average of male is more for group 1 than for group 0. Variable ‘good_country’ =1 represents people are from US, UK and Germany. And thus, the less average number of good_country means that adopters are more likely from countries other than US, UK and Germany.</p>
 <p>And thus, in terms of demographics, we can conclude that adopters are more likely to be older males who are not from US, UK or Germany. Because older people might have a higher income, it makes them more affordable to become premium users.</p>
 </div>
@@ -756,7 +723,7 @@ ggplot(data_g, aes(x=age, y=friend_cnt, col=adopter))+
   geom_point(alpha=0.5)+
   geom_hline(data = stat, aes(yintercept = friend_cnt_mean, colour = adopter),
              linetype = &quot;longdash&quot;, size=1)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>The horizontal lines represent the mean values of friend_cnt for two groups and we can see the yellow line (adopter) is above the grey line (non-adopter), meaning that on average, the group 1 (adopter) has more friends than group 0 (non-adopter). However, it’s interesting to see that there’s also non-adopter who has close to 5,000 friends. And also there are more non-adopters have friend number more than 1,000, compared with adopters. Even though there are some non- adopters have lots of friends, there are still a lots of them do not have significant amount of friends. Thus, the adopters still have more friends than non-adopters on average.</p>
 <pre class="r"><code>#avg_friend_age
 ggplot(data_g,aes(x=avg_friend_age,group=adopter,fill=adopter))+
@@ -766,7 +733,7 @@ ggplot(data_g,aes(x=avg_friend_age,group=adopter,fill=adopter))+
   geom_vline(data = stat, aes(xintercept = avg_friend_age_mean, colour = adopter),
              linetype = &quot;longdash&quot;, size=1)+
   theme_bw()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>The vertical lines show the mean values of avg_friend_age for two groups. We can see that adopters have older friends than non-adopters. And most of their friends’ age are all around 22.</p>
 <pre class="r"><code>#avg_friend_male
 p3=ggplot(data_g, aes(x=adopter, y = avg_friend_male, fill = adopter))+ 
@@ -784,7 +751,7 @@ p4=ggplot(data_g, aes(x=adopter, y = friend_country_cnt, fill = adopter))+
 
 #Combined: avg_friend_male+friend_country_cnt
 grid.arrange(p3,p4,nrow=2)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>The graph shows that compared with non-adopters, adopters’ friends are more likely to be males and their friends are more diverse, meaning that they are from different countries. Friends’ of non-adopters are from less number of countries.</p>
 <pre class="r"><code>#subscriber_friend_cnt
 ggplot(data_g, aes(x=age, y=subscriber_friend_cnt, col=adopter))+
@@ -794,7 +761,7 @@ ggplot(data_g, aes(x=age, y=subscriber_friend_cnt, col=adopter))+
   geom_hline(data = stat, aes(yintercept = subscriber_friend_cnt_mean, 
                               colour = adopter),
              linetype = &quot;longdash&quot;, size=1)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>The horizontal lines shows the mean values of number of subscriber friends in two groups and we can see that yellow line is above the grey line, meaning that adopters have more subscriber friends than non-adopters on average. However, it’s also interesting to see that there is also non- adopter who has more than 300 subscriber friends and also compared with adopters, there are more non-adopters who have more than 50 subscriber friends. However, since there are still lots of non-adopters who have less subscriber friends, adopters have more subscriber friends on average.</p>
 <p>Therefore, in terms of peer influence, adopters generally have more friends and subscriber friends and their friends more tend to be older males and are more diversely from different countries. Interestingly, we also find out the some non-adopters have many friends and subscriber friends but since they are only a few people, most non-adopters do not have lots of friends and subscriber friends. And thus, we can say that adopters have more peer influence than non-adopters. The stronger peer influence is how it make them convert from free users to premium users.</p>
 </div>
@@ -845,7 +812,7 @@ p10=ggplot(data_g, aes(x=adopter, y = tenure, fill = adopter))+
 
 #Combined:
 grid.arrange(p5,p6,p7,p8,p9,p10,nrow=2)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>The graphs show that for all the features, adopters have higher mean values which shows a better performance on the platform.</p>
 <pre class="r"><code>ggplot(data_g, aes(x=age, y=tenure, col=adopter))+
   labs(title=&quot;tenure&quot;)+
@@ -853,7 +820,7 @@ grid.arrange(p5,p6,p7,p8,p9,p10,nrow=2)</code></pre>
   geom_point(alpha=0.5)+
   geom_hline(data = stat, aes(yintercept = tenure_mean, colour = adopter),
              linetype = &quot;longdash&quot;, size=1)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>We can look into tenure further from the graph below. The horizontal lines show the mean value of tenure for two groups and it shows that the yellow line is above the grey line which means that adopters stays on the site a lot longer than the non-adopters in general. However, we can also see that on the top of the graph, it shows that there are more non-adopters who stay with the site more than 115 months so some of the non-adopters are really loyal users. However, because most of the non-adopters are clustered on the bottom of the graph, adopters still have higher tenure than non-adopters on average.</p>
 <p>To summarize, in terms of user engagement, adopters are more active and stay longer on the site, showing a better performance and engagement on interacting with the features including songsListened, lovedTracks, posts, playlists, shouts. Even though there are a few non-adopters who also stay with the platform for a long time, adopters still show a better performance as a whole. Because those people are more engaged with the platform, they are more likely to convert from free users to premium users.</p>
 </div>
@@ -1152,7 +1119,7 @@ g10=ggplot(data_g,aes(x=tenure))+
   geom_histogram(position=&quot;stack&quot;,colour=&#39;grey&#39;,alpha=3,binwidth=10)+
   labs(title=&quot;tenure&quot;)
 grid.arrange(g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,nrow=5)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre class="r"><code>#friend_cnt, firend_country_cnt, songsListened, lovedTracks, 
 #posts, playlists, shouts are right skewed so log them</code></pre>
 <p>I found out that the following variables are highly right-skewed: friend_cnt, firend_country_cnt, songsListened, lovedTracks, posts, playlists, shouts. And thus, we will take log transformation on these variables in order to make the outliers are not having too much effect on our results. And the logistic regression result is shown as following and we can see that all variables are significant.</p>
@@ -1223,7 +1190,7 @@ ps_df %&gt;%
   facet_wrap(~treatment) +
   xlab(&quot;Probability of treatment&quot;) +
   theme_bw()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="step-3.-propensity-score-matching" class="section level3">
 <h3>Step 3. Propensity Score Matching</h3>
@@ -1374,7 +1341,7 @@ grid.arrange(
 ## `geom_smooth()` using formula &#39;y ~ x&#39;
 ## `geom_smooth()` using formula &#39;y ~ x&#39;
 ## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <pre class="r"><code>grid.arrange(
   plot_fun(data_m,&#39;songsListened&#39;),
   plot_fun(data_m,&#39;lovedTracks&#39;),
@@ -1393,7 +1360,7 @@ grid.arrange(
 ## `geom_smooth()` using formula &#39;y ~ x&#39;
 ## `geom_smooth()` using formula &#39;y ~ x&#39;
 ## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
 <p>In order to make sure our means are really statistically indifferent in two groups, I did t-test on all the covariates to see if there is significant mean differences. And the result below shows that all of the p-values are insignificant which means that all the means of covariates are the same between treatment and control group, proving that our matching is done successfully and our matched data is now balanced.</p>
 <pre class="r"><code>#4.2. t-test####
 #t-test
