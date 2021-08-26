@@ -1,4 +1,4 @@
-# High-Note
+# High-Note Analysis
 * Objective:
 
    Given the higher profitability of premium subscribers, it is generally in the interest of company to motivate users to go from “free to fee”; that is, convert free accounts to premium subscribers. The task in regards to this case is to analyze the data for potential insight to inform a “free-to-fee” strategy.
@@ -47,9 +47,10 @@ Therefore, in terms of peer influence, adopters generally have more friends and 
 
 To summarize, in terms of user engagement, adopters are more active and stay longer on the site, showing a better performance and engagement on interacting with the features including songsListened, lovedTracks, posts, playlists, shouts. Even though there are a few non-adopters who also stay with the platform for a long time, adopters still show a better performance in general. Because those people are more engaged with the platform, they are more likely to convert from free users to premium users.
 
-Propensity Score Matching:
-
-
+# Propensity Score Matching:
+* use PSM to test whether having subscriber friends affects the likelihood of becoming an adopter. For this purpose, we first divide the treatment and control based on the number of subscriber friendsTreatment group: 
+   * subscriber_friend_cnt >=1
+   * Control group: subscriber_friend_cnt =0
 
 
 
