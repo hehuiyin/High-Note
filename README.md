@@ -59,6 +59,7 @@ To summarize, in terms of user engagement, adopters are more active and stay lon
 <img width="641" alt="Screen Shot 2021-08-26 at 15 43 35" src="https://user-images.githubusercontent.com/73683982/131045426-8c90d96e-d1d7-40ad-a8aa-9214a4800d8f.png">
 
 From the distribution graphs of each variable above, the following variables are highly right-skewed: friend_cnt, firend_country_cnt, songsListened, lovedTracks, posts, playlists, shouts. And thus, we will take log transformation on these variables in the following logistic regression model in order to eliminate the outlier effect on our results. And the logistic regression result is shown as following and we can see that all variables are significant:
+
 <img width="350" alt="Screen Shot 2021-08-26 at 15 46 21" src="https://user-images.githubusercontent.com/73683982/131045652-348eac07-adfd-48cd-be04-5f94c705c753.png">
 
 After calculating the propensity score using the above logiatic regression model, we can plot a histogram showing the distribution of propensity score by treatment status. The control group graph is right skewed with more propensity scores that are closer to 0 while the treatment group is more smooth with consistent distribution among all levels of scores.
@@ -72,13 +73,16 @@ We can see from the result below that the algorithm found 6,948 pairs of matched
 <img width="548" alt="Screen Shot 2021-08-26 at 17 39 07" src="https://user-images.githubusercontent.com/73683982/131053479-55eecca7-72e4-4dc0-8d4d-d5a869ca2e31.png">
 
 To assess the balance in the matched dataset, we can plot the means of each covariate based on propensity score for treatment and control group. If the means are really close to each other, that means that the matching is done well. And the graphs below shows nearly identical means for each covariate between two groups so our matching is good.
+
 <img width="412" alt="Screen Shot 2021-08-26 at 17 41 22" src="https://user-images.githubusercontent.com/73683982/131053611-093fc299-9690-427a-931f-b7a18b69e2dc.png">
 <img width="410" alt="Screen Shot 2021-08-26 at 17 41 35" src="https://user-images.githubusercontent.com/73683982/131053625-624d0a85-ca3f-46b4-bf55-41cbeb5bf4fb.png">
 
 In order to make sure our means are really statistically indifferent in two groups, we can perform t-test on all the covariates to see if there is significant mean differences. And the result below shows that all of the p-values are insignificant which means that all the means of covariates are the same between treatment and control group, proving that our matching is done successfully and our matched data is now balanced.
+
 <img width="233" alt="Screen Shot 2021-08-26 at 17 43 21" src="https://user-images.githubusercontent.com/73683982/131053752-714f6727-1be8-4ba7-9b19-49243803fb02.png">
 
 After the matching is done, we can then use the matched dataset to run a logistic regression model to see the effect of treatment on adopter. The regression result below shows that treatment (subscriber friend>=1) has a positive effect on adopter (premium users), meaning that having more than one subscriber friends have a positive effect on converting users from free users to premium users.
+
 <img width="372" alt="Screen Shot 2021-08-26 at 17 44 49" src="https://user-images.githubusercontent.com/73683982/131053833-afad257e-f3cf-4420-8ff4-2844f25bad73.png">
 
 # Regression Analysis
