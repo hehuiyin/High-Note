@@ -96,5 +96,5 @@ In conclusion, age, male, friends’ age, subscriber friend amount, the number o
 
 
 
-The complete analysis can be seen:
+The complete analysis can be found on:
 https://hehuiyin.github.io/High-Note/
